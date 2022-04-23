@@ -1,9 +1,10 @@
-from pandas import DataFrame
-from requests import get
 from logging import INFO
 from logging import basicConfig
 from logging import getLogger
+
 from arrow import now
+from pandas import DataFrame
+from requests import get
 
 BASE_URL = 'https://api.fiscaldata.treasury.gov/services/api/fiscal_service/'
 ENDPOINT = 'v2/accounting/od/avg_interest_rates'
