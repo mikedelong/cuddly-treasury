@@ -24,4 +24,4 @@ if __name__ == '__main__':
     data_df = DataFrame.from_records(data=data, index=None, exclude=None)
     LOGGER.info('shape: %s', data_df.shape)
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    LOGGER.info('total time: {:5.2f}s'.format((now() - TIME_START).total_seconds()))
