@@ -8,8 +8,9 @@ from pandas import read_csv
 BASE_URL = 'https://api.fiscaldata.treasury.gov/services/api/fiscal_service/'
 ENDPOINT = 'v2/accounting/od/avg_interest_rates'
 FIELDS = 'record_date,security_type_desc,security_desc,avg_interest_rate_amt,src_line_nbr,'
-FILTER = 'record_date:gte:2015-01-01'
+FILTER = 'record_date:gte:2014-01-01'
 FORMAT = 'csv'
+SECURITY = 'security_desc'
 SIZE = 5000
 
 if __name__ == '__main__':
@@ -23,5 +24,10 @@ if __name__ == '__main__':
     LOGGER.info('url: %s', url)
     data_df = read_csv(filepath_or_buffer=url)
     LOGGER.info('shape: %s', data_df.shape)
+
+    LOGGER.info('data headings: %s', list(data_df))
+    security_types = sorted(data_df[SECURITY].unique())
+    for security_type in security_types:
+        LOGGER.info('%s : %d', security_type, len(data_df[data_df[SECURITY] == security_type]))
 
     LOGGER.info('total time: {:5.2f}s'.format((now() - TIME_START).total_seconds()))
