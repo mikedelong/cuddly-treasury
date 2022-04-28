@@ -1,3 +1,4 @@
+import datetime
 from logging import INFO
 from logging import basicConfig
 from logging import getLogger
@@ -11,16 +12,16 @@ FIELDS = 'record_date,security_type_desc,security_desc,avg_interest_rate_amt,src
 FILTER = 'record_date:gte:2001-01-01'
 FORMAT = 'csv'
 SECURITY = 'security_desc'
-SIZE = 4200
 
 if __name__ == '__main__':
     TIME_START = now()
+    size = 17 * (TIME_START.date() - datetime.date(year=2001, month=1, day=1)).days // 30
     LOGGER = getLogger(__name__, )
     basicConfig(format='%(asctime)s : %(name)s : %(levelname)s : %(message)s', level=INFO, )
     LOGGER.info('started')
 
     url = '{}{}?fields={}&filter={}&format={}&page[size]={}'.format(BASE_URL, ENDPOINT, FIELDS, FILTER,
-                                                                    FORMAT, SIZE)
+                                                                    FORMAT, size)
     LOGGER.info('url: %s', url)
     data_df = read_csv(filepath_or_buffer=url)
     LOGGER.info('shape: %s', data_df.shape)
