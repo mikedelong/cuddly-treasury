@@ -5,8 +5,8 @@ from logging import getLogger
 
 from arrow import now
 from pandas import read_csv
-from seaborn import catplot
-from matplotlib.pyplot import show
+
+import plotly.express as px
 
 BASE_URL = 'https://api.fiscaldata.treasury.gov/services/api/fiscal_service/'
 ENDPOINT = 'v2/accounting/od/avg_interest_rates'
@@ -33,10 +33,18 @@ if __name__ == '__main__':
     for security_type in security_types:
         LOGGER.info('%s : %d', security_type, len(data_df[data_df[SECURITY] == security_type]))
 
-    columns = ['record_date', 'security_desc', 'avg_interest_rate_amt']
-    melted_df = data_df[columns].melt(id_vars=['record_date', 'security_desc'],
-                                      value_vars=['avg_interest_rate_amt']).drop(columns=['variable'])
-    catplot(data=melted_df, hue='security_desc', kind='point', x='record_date', y='value')
-    show()
+    # remove the series we don't care about
+    remove = ['Hope Bonds', 'R.E.A. Series', 'Treasury Inflation-Indexed Bonds',
+              'Treasury Inflation-Indexed Notes']
+    data_df = data_df[~data_df['security_desc'].isin(remove)]
+    # fix one weird datapoint
+    data_df['security_desc'] = data_df['security_desc'].apply(
+        lambda x: x if x != 'TotalMarketable' else 'Total Marketable')
+
+    use_columns = ['record_date', 'security_desc', 'avg_interest_rate_amt']
+    map_columns = {'record_date': 'date', 'avg_interest_rate_amt': 'rate'}
+    figure = px.line(data_frame=data_df[use_columns].rename(columns=map_columns), x='date',
+                     facet_col='security_desc', facet_col_wrap=3, y='rate', )
+    figure.show()
 
     LOGGER.info('total time: {:5.2f}s'.format((now() - TIME_START).total_seconds()))
