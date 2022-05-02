@@ -8,6 +8,7 @@ from arrow import now
 from pandas import read_csv
 
 BASE_URL = 'https://api.fiscaldata.treasury.gov/services/api/fiscal_service/'
+COLUMNS = {'record_date': 'date', 'avg_interest_rate_amt': 'rate'}
 ENDPOINT = 'v2/accounting/od/avg_interest_rates'
 FIELDS = 'record_date,security_desc,avg_interest_rate_amt,'
 FILTER = 'record_date:gte:2001-01-01'
@@ -39,8 +40,7 @@ if __name__ == '__main__':
     for security_type in sorted(data_df[SECURITY].unique()):
         LOGGER.info('%s : %d', security_type, len(data_df[data_df[SECURITY] == security_type]))
 
-    map_columns = {'record_date': 'date', 'avg_interest_rate_amt': 'rate'}
-    figure = px.line(data_frame=data_df.rename(columns=map_columns), x='date',
+    figure = px.line(data_frame=data_df.rename(columns=COLUMNS), x='date',
                      facet_col='security_desc', facet_col_wrap=3, y='rate', )
     figure.show()
 
