@@ -9,7 +9,7 @@ from pandas import read_csv
 
 BASE_URL = 'https://api.fiscaldata.treasury.gov/services/api/fiscal_service/'
 ENDPOINT = 'v2/accounting/od/avg_interest_rates'
-FIELDS = 'record_date,security_type_desc,security_desc,avg_interest_rate_amt,src_line_nbr,'
+FIELDS = 'record_date,security_desc,avg_interest_rate_amt,'
 FILTER = 'record_date:gte:2001-01-01'
 FORMAT = 'csv'
 SECURITY = 'security_desc'
@@ -33,15 +33,14 @@ if __name__ == '__main__':
                                                       'Treasury Inflation-Indexed Bonds',
                                                       'Treasury Inflation-Indexed Notes'])]
     # fix one weird datapoint
-    data_df['security_desc'] = data_df['security_desc'].apply(
+    data_df[SECURITY] = data_df[SECURITY].apply(
         lambda x: x if x != 'TotalMarketable' else 'Total Marketable')
 
     for security_type in sorted(data_df[SECURITY].unique()):
         LOGGER.info('%s : %d', security_type, len(data_df[data_df[SECURITY] == security_type]))
 
-    use_columns = ['record_date', 'security_desc', 'avg_interest_rate_amt']
     map_columns = {'record_date': 'date', 'avg_interest_rate_amt': 'rate'}
-    figure = px.line(data_frame=data_df[use_columns].rename(columns=map_columns), x='date',
+    figure = px.line(data_frame=data_df.rename(columns=map_columns), x='date',
                      facet_col='security_desc', facet_col_wrap=3, y='rate', )
     figure.show()
 
